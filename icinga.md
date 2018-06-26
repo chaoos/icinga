@@ -251,7 +251,7 @@ define command{
         command_line    /usr/lib/nagios/plugins/check_disk -X proc -X sysfs -X tmpfs -X devtmpfs -w '$ARG1$' -c '$ARG2$' -e
 }
 </code></pre>
-<h2 id="icinga---generell">Icinga - Generell</h2>
+<h1 id="icinga---generell">Icinga - Generell</h1>
 <p>Icinga ist ein “Fork” des wohlbekannten Überwachungssystems Nagios. Eine 100%ige Kompatibilität mit den internen Strukturen des letzteren erlaubt es Ihnen, mit Icinga alle Plugins und Addons zu benutzen, die von verschiedenen Firmen und der großen Community entwickelt wurden bzw. werden.</p>
 <p>Bevor man mit der Konfiguration beginnt, sollte man sich daüber im klaren sein, was man eigentlich überwachen will und wie genau. Ein komplettes Netz effektiv zu überwachen und das Konfigurieren wird seine Zeit dauern und einiges an Arbeit erfordern. Nehmen Sie sich diese Zeit!</p>
 <p>Es wird zwischen 2 verschiedenen Arten von Checks unterschieden:</p>
@@ -269,8 +269,8 @@ Diese Checks werden vom Rechner, auf dem Icinga läuft, periodisch und aktiv aus
 Von passives Checks ist die Rede, wenn der Überwachungsrechner den Check nicht selber initiiert, sondern ein anderes System. Die Ergebnisse werden somit in einem Intervall (freshness_threshold) übermittelt und auf dem Überwachungsrechner nur ausgewertet. Das kann sinnvoll sein, wenn Sie zum Beispiel eine komplexere Umgebung mit Firewalls zwischen einzelnen zu überwachenden Netzen haben. Bei riesigen Settings mit tausenden von Systemen und Services, kann es sinnvoll sein, nicht alle Checks von einem einzigen Rechner auszuführen.</li>
 </ul>
 <p>Streng genommen gibt es noch weitere Möglichkeiten. Zum Beispiel SNMP Traps, die oft auf Switches eingerichtet werden können und einen Zielrechner informieren, wenn etwas nicht in Ordnung ist; zum Beispiel ein Link geht down. Solche Dinge können allerdings auch über aktive Checks ermittelt werden.</p>
-<h2 id="konfiguration-icinga">Konfiguration Icinga</h2>
-<h3 id="konfigurationsschema-generell">Konfigurationsschema generell</h3>
+<h1 id="konfiguration-icinga">Konfiguration Icinga</h1>
+<h2 id="konfigurationsschema-generell">Konfigurationsschema generell</h2>
 <p>Die Konfigurationsdateien in <code>/etc/icinga/</code> (nicht erschrecken, dass es so viele sind, das ist nur aus Gründen der Übersicht, wenn man vieles überwacht)</p>
 <ul>
 <li><code>/etc/icinga/icinga.cfg</code> – Hauptkonfigurationsdatei, von hier aus werden alle anderen included</li>
@@ -298,7 +298,7 @@ Von passives Checks ist die Rede, wenn der Überwachungsrechner den Check nicht 
 </ul>
 <p>Es empfielt sich für jedes Gerät, dass überwacht werden soll eine eigene Konfigurationsdatei zu erstellen, oder zumindest für Gruppen, die zusammengehören, denn sonst verliert man schnell den Überblick.<br>
 Konfigurationsdirektiven in Icinga, wie auch in Nagios, sehen immer gleich aus. Es handelt sich um Definitionsblöcke eingeschlossen in geschwungenen Klammern <code>{}</code>. Alles in diesen Klammern gehört zum selben Element. Ein Element kann zum Beispiel ein Host, Service oder ein Check-Commmando sein. Mehr dazu später.</p>
-<h3 id="allgemeine-einstellungen">Allgemeine Einstellungen</h3>
+<h2 id="allgemeine-einstellungen">Allgemeine Einstellungen</h2>
 <p>Über die Konfigurationsdatei <code>/etc/icinga/icinga.cfg</code> werden alle anderen Dateien und Ordner geladen. Diese Datei enthält üblicherweise Einstellungen über den Daemon selber. Die Ausgangs-Konfigurationsdatei aus den Debian Repository ist schon sehr ausführlich kommentiert. Natürlich kann die komplette Konfiguration in dieser Datei sein, aber es empfielt sich, dass man Objektdefinitionen und Daemon-Einstellungen trennt. Hier nur die wichtigsten Einstellungen:</p>
 <ul>
 <li><code>cfg_file</code> &amp; <code>cfg_dir</code>: Diese beiden Direktiven laden eine zusätzliche Datei (bzw. Ordner mit allen Dateien darin) als Konfigurationsdateien.</li>
@@ -311,7 +311,7 @@ Konfigurationsdirektiven in Icinga, wie auch in Nagios, sehen immer gleich aus. 
 <li><code>process_performance_data</code>: Ein- und Ausschalten der Verarbeitung von Performance Daten (siehe “Graphen mit PNP4Nagios &amp; einbinden ins Webinterface”)</li>
 <li>evtl. mehr (TODO)</li>
 </ul>
-<h4 id="simple-host-definition">Simple Host Definition</h4>
+<h3 id="simple-host-definition">Simple Host Definition</h3>
 <p>Diese definitieren den zu überwachenden Host per IP Adresse. Hier ein Beispiel:</p>
 <pre><code>define host{
     use             generic-host
@@ -328,7 +328,7 @@ Konfigurationsdirektiven in Icinga, wie auch in Nagios, sehen immer gleich aus. 
 <li><code>alias</code>: Für Icinga nicht relevant, nur für den Benutzer; wird im Interface angezeigt</li>
 <li><code>address</code>: Das ist wichtig: Hier tragen Sie die IP Adresse des Hosts ein, wie er vom <strong>Icinga-Server</strong> aus erreichbar ist. Theoretisch kann hier alles drinstehen, was zur eindeutigen Identifikation des Hosts genutzt wird. Es empfielt sich nicht, hier einen DNS-Namen einzutragen, es würde zwar auch funktionieren, aber wenn der DNS Dienst ausfällt, kann der Host nicht mehr überprüft werden. Das wäre entgegen dem Sinn eines Überwachungssystems, denn mit dem Server mag vielleicht alles in Ordnung sein, nur das DNS hat Probleme. Darum sollte es auch separat überprüft werden. Diese Option wird häufig (aber nicht immer) in Checks verwendet um den Host zu checken.</li>
 </ul>
-<h4 id="simple-service-definition">Simple Service Definition</h4>
+<h3 id="simple-service-definition">Simple Service Definition</h3>
 <p>Genau gleich wie Hosts definiert werden, werden auch Services definiert. Die Services sind die eigentlichen Checks. Sie können alles mögliche sein. Einzig müssen sie einen Wert zurückgeben, mit dem Icinga etwas anfangen kann. Diese Wert sind: <code>OK</code>, <code>WARNING</code>, <code>CRITICAL</code>, <code>UNKNOWN</code>. Mehr dazu unter “Manuelles Testen von Checks”. Hier ein Beispiel:</p>
 <pre><code>define service{
         use                      generic-service
@@ -343,7 +343,7 @@ Konfigurationsdirektiven in Icinga, wie auch in Nagios, sehen immer gleich aus. 
 <li><code>service_description</code>: Der Name, wie der Service im Webinterface angezeigt wird.</li>
 <li><code>check_command</code>: Hier wird der Service mit einem Kommando verbunden, dass schlussendlich in einer Shell ausgeführt wird. Das Kommando ist eingeteilt in mehrere Teile durch ! getrennt. Das heisst in <code>check_procs!250!400</code> wie oben wird das Kommando <code>check_procs</code> ausgeführt (welches gleich im nächsten Kapitel erklärt wird). Als Argument wird dem Kommando die beiden Argumente <code>250</code> und <code>400</code> übergeben. (als weiteres Argument wird oft das Icinga-interne <code>$HOSTADDRESS$</code> Makro übergeben, also das, was in der Host Definition unter <code>address</code> steht. Diverse solcher Makros lassen sich in den eigentlichen Check-Kommandos einsetzen. Für eine Liste aller verfügbaren Makros siehe: <code>http://&lt;ip&gt;/icinga/docs/de/macrolist.html</code>)</li>
 </ul>
-<h4 id="command-definition">Command Definition</h4>
+<h3 id="command-definition">Command Definition</h3>
 <p>Als Beispiel, die Definition von “<code>check_procs</code>” (Anzahl laufender Prozesse):</p>
 <pre><code>define command{
         command_name    check_procs
@@ -378,7 +378,7 @@ Hier nochmal zusammenfassend, wie aus dem check_command (aus einer Service- oder
 $ /usr/local/icinga/libexec/sample-plugin.pl -H 1.2.3.4 -a argument1 -p parameter -n 5
 OK: Sample command successfully
 </code></pre>
-<h4 id="hostgroup-definition">Hostgroup Definition</h4>
+<h3 id="hostgroup-definition">Hostgroup Definition</h3>
 <p>Nun will man nicht für jeden Host jeden Service separat definieren. Dafür sind Hostgroups gedacht. Hier ein Beispiel:</p>
 <pre><code>define hostgroup{
     hostgroup_name          http-servers
@@ -418,9 +418,9 @@ OK: Sample command successfully
 }
 </code></pre>
 <p>Wenn nun ein weiterer Webserver dazukommt, weisen wir ihn einfach der Hostgroup http-servers (oder apache-servers oder iis-servers) zu und schon werden ihm die entsprechenden Services zugewiesen.</p>
-<h4 id="servicegroup-definition">Servicegroup Definition</h4>
+<h3 id="servicegroup-definition">Servicegroup Definition</h3>
 <p>Auch Services können gruppiert werden, das hat aber nur kosmetischen Wert. Mann kann zum Beispiel alle Services, die die RAM-Auslastung überwachen, zusammennehmen und hat so im Webinterface auf einen Blick alle diese Services zusammen.</p>
-<h4 id="kontakt---kontagruppen-definitionen">Kontakt- &amp; Kontagruppen Definitionen</h4>
+<h3 id="kontakt---kontagruppen-definitionen">Kontakt- &amp; Kontagruppen Definitionen</h3>
 <p>Hier werden die zu alarmierenden Kontakte definiert. In unserem Beispielszenario haben wir nur einen Kontakt. Dieser könnte so aussehen:</p>
 <pre><code>define contact{
         contact_name                    tom
@@ -447,9 +447,9 @@ OK: Sample command successfully
 <li><code>host_notification_commands</code> &amp; <code>service_notification_commands</code>: Das Kommando zum benachrichtigen (findet sich auch in <code>/etc/icinga/commands.cfg</code>). Hier sehen sie gut, wie stark Icinga ausgebaut werden kann. Wenn Sie zum Beispiel SMS als Notifications verschicken wollen, müssen Sie Ihren Server so einrichten, dass über ein Shell Kommando SMS verschickt werden können. Dann müssen Sie nur die notification_commands dementsprechend abändern. Dieses SMS-Kommando kann selbstverständlich auch ein Skript sein, dass SMS über eine Webplattform versendet.</li>
 <li><code>email</code>: die Email-Adresse (wird als Makro <code>$CONTACTEMAIL$ i</code>n den Kommandos verwendet)</li>
 </ul>
-<h4 id="zeitfenster-definition">Zeitfenster Definition</h4>
+<h3 id="zeitfenster-definition">Zeitfenster Definition</h3>
 <p>Definiert einen Zeitperiode in der Benachrichtigungen verschickt werden oder in der Services gecheckt werden. Vordefinierte sind zu finden in <code>/etc/icinga/objects/timeperiods_icinga.cfg</code>: 24x7, workhours, nonworkhours.</p>
-<h3 id="manuelles-testen-von-checks">Manuelles Testen von Checks</h3>
+<h2 id="manuelles-testen-von-checks">Manuelles Testen von Checks</h2>
 <p>Immer wieder muss ein Check manuell getestet oder überprüft werden. Die Nagios-Plug-Ins werden in der Regel unter <code>/usr/lib/nagios/plugins/</code> (<code>/usr/lib/nagios</code> ist das Home-Verzeichnis des Nagios Benutzers) abgelegt. Es handelt sich hierbei um Skripte oder Kompilate, die die Rückgabe der verschiedenen Checks ermitteln. Diese Dateien müssen <em>ausführbar</em> sein für den Benutzer “nagios”.<br>
 Um ein Plug-In nun so zu testen, wie der Icinga-Prozess es ausführen würde, muss man sich mit dem Benutzer nagios anmelden und in den Ordner <code>/tmp/</code> wechseln (da der Login deaktiviert ist, müssen wir mit -s eine Shell angeben):</p>
 <pre><code>$ su - nagios -s /bin/sh
@@ -1863,7 +1863,8 @@ Warning: Object definition type 'hostextinfo' is DEPRECATED in file '/etc/icinga
 <p>Kommentare können auch ohne Downtime an einen Host oder Service angeheftet werden. Beispielsweise wenn ein Service ein Problem hat und ein Administrator sich dem Problem annimmt, kann er im “Service Information” Bildschirm unter “Service Commands” -&gt; “Acknowledge this service problem” auswählen. Solche Acknowledgements können auch per Mail versendet werden.</p>
 <p>@Tom: Hier ist die Anleitung fertig. Das weiter unten wären Ideen für ein “forgeschrittenes” Video.</p>
 <hr>
-<h3 id="nrpe-sicher-machen-mit-ssl-und-zertifikaten">NRPE sicher machen mit SSL und Zertifikaten</h3>
+<h1 id="forgeschrittenes">Forgeschrittenes</h1>
+<h2 id="nrpe-sicher-machen-mit-ssl-und-zertifikaten">NRPE sicher machen mit SSL und Zertifikaten</h2>
 <p>Auf dem Icinga-Server:</p>
 <pre><code>$ apt-get install libssl-dev gcc make
 $ git clone -b nrpe-2-16-RC2 https://github.com/NagiosEnterprises/nrpe.git
